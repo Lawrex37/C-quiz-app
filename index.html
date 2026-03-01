@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>C++ Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+ <style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #020617;              /* very dark navy */
+    color: #f8fafc;                   /* near-white text */
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .quiz-box {
+    background: #0f172a;              /* dark slate blue */
+    width: 95%;
+    max-width: 650px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #e0e7ff;
+  }
+
+  .counter {
+    text-align: center;
+    font-size: 14px;
+    color: #a5b4fc;                   /* soft purple-blue */
+    margin-bottom: 20px;
+  }
+
+  .question {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #f1f5f9;
+    white-space: pre-wrap;
+    font-family: Consolas, monospace;
+  }
+
+  .options button {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    background: #1e293b;              /* option background */
+    border: none;
+    border-radius: 8px;
+    color: #e5e7eb;
+    text-align: left;
+    cursor: pointer;
+    font-size: 15px;
+  }
+
+  .options button:hover {
+    background: #334155;
+  }
+
+  .options button.correct {
+    background: #22c55e;
+    color: white;
+  }
+
+  .options button.wrong {
+    background: #e11d48;
+    color: white;
+  }
+
+  .nav-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .nav-buttons button {
+    flex: 1;
+    padding: 12px;
+    background: #4f46e5;              /* indigo primary */
+    border: none;
+    border-radius: 8px;
+    color: #eef2ff;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .nav-buttons button:disabled {
+    background: #475569;
+    cursor: not-allowed;
+  }
+
+  .nav-buttons button:hover:not(:disabled) {
+    background: #6366f1;
+  }
+
+  .restart-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    background: #7c3aed;              /* purple restart */
+    border: none;
+    border-radius: 8px;
+    color: #f5f3ff;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .restart-btn:hover {
+    background: #8b5cf6;
+  }
+
+  .result {
+    text-align: center;
+    font-size: 18px;
+    margin-top: 20px;
+    color: #e0e7ff;
+  }
+</style>
+</head>
+<body>
+
+<div class="quiz-box">
+  <h1>C++ Quiz</h1>
+  <div class="counter" id="counter"></div>
+
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+
+  <div class="nav-buttons">
+    <button id="prevBtn">Previous</button>
+    <button id="nextBtn">Next</button>
+  </div>
+
+  <div class="result" id="result" style="display:none;"></div>
+
+<button class="restart-btn" id="restartBtn" style="display:none;">Restart Quiz</button>
+</div>
+
+<script>
+const quizData = [
+ {
+  q: "What is the primary purpose of a variable in C++ programming?",
+  o: [
+    "To store data values in memory",
+    "To display output on the screen",
+    "To control program flow",
+    "To define program structure"
+  ],
+  a: 0
+},
+{
+  q: "Which of the following is used to write comments in C++?",
+  o: [
+    "// and /* */",
+    "# and ##",
+    "<!-- -->",
+    "** **"
+  ],
+  a: 0
+},
+{
+  q: "Which statement is commonly used for basic output in C++?",
+  o: [
+    "cout",
+    "print",
+    "echo",
+    "write"
+  ],
+  a: 0
+},
+{
+  q: "Which control structure is used to execute a block of code only when a condition is true?",
+  o: [
+    "if-else statement",
+    "loop",
+    "function",
+    "array"
+  ],
+  a: 0
+},
+{
+  q: "Which loop is guaranteed to execute at least once?",
+  o: [
+    "do-while loop",
+    "for loop",
+    "while loop",
+    "nested loop"
+  ],
+  a: 0
+},
+{
+  q: "Which data structure groups multiple values of the same type together?",
+  o: [
+    "Array",
+    "Variable",
+    "Pointer",
+    "Function"
+  ],
+  a: 0
+},
+{
+  q: "What is the main purpose of a function in C++?",
+  o: [
+    "To break a program into reusable blocks",
+    "To store multiple values",
+    "To allocate memory directly",
+    "To define variables only"
+  ],
+  a: 0
+},
+{
+  q: "What does a pointer store in C++?",
+  o: [
+    "The memory address of another variable",
+    "The value of a variable",
+    "The data type of a variable",
+    "The name of a variable"
+  ],
+  a: 0
+},
+{
+  q: "Which concept allows a function to access memory locations directly?",
+  o: [
+    "Pointers",
+    "Arrays",
+    "Classes",
+    "Namespaces"
+  ],
+  a: 0
+},
+{
+  q: "Which data structure is an array whose elements are pointers?",
+  o: [
+    "Array of pointers",
+    "Pointer array",
+    "Linked list",
+    "Structure"
+  ],
+  a: 0
+},
+{
+  q: "Which C++ feature is used to handle character sequences?",
+  o: [
+    "Strings",
+    "Integers",
+    "Pointers",
+    "Enumerations"
+  ],
+  a: 0
+},
+{
+  q: "What is the main purpose of namespaces in C++?",
+  o: [
+    "To avoid name conflicts",
+    "To store variables",
+    "To manage memory",
+    "To control loops"
+  ],
+  a: 0
+},
+{
+  q: "Which concept allows detection and handling of runtime errors?",
+  o: [
+    "Exceptions",
+    "Pointers",
+    "Operators",
+    "Arrays"
+  ],
+  a: 0
+},
+{
+  q: "What is an object in C++?",
+  o: [
+    "An instance of a class",
+    "A function",
+    "A data type",
+    "A variable"
+  ],
+  a: 0
+},
+{
+  q: "Which concept binds data and functions together?",
+  o: [
+    "Encapsulation",
+    "Inheritance",
+    "Polymorphism",
+    "Abstraction"
+  ],
+  a: 0
+},
+{
+  q: "Which OOP concept allows a class to derive properties from another class?",
+  o: [
+    "Inheritance",
+    "Encapsulation",
+    "Abstraction",
+    "Enumeration"
+  ],
+  a: 0
+},
+{
+  q: "Which OOP concept allows different implementations of the same function?",
+  o: [
+    "Polymorphism",
+    "Inheritance",
+    "Encapsulation",
+    "Abstraction"
+  ],
+  a: 0
+},
+{
+  q: "Which OOP concept focuses on hiding implementation details?",
+  o: [
+    "Abstraction",
+    "Inheritance",
+    "Polymorphism",
+    "Operators"
+  ],
+  a: 0
+},
+{
+  q: "What is the purpose of operators in C++?",
+  o: [
+    "To perform operations on data",
+    "To define classes",
+    "To handle exceptions",
+    "To create namespaces"
+  ],
+  a: 0
+},
+{
+  q: "What is an enumerated type (enum) used for?",
+  o: [
+    "To define a set of named constant values",
+    "To store memory addresses",
+    "To define loops",
+    "To handle input and output"
+  ],
+  a: 0
+},
+{
+  q: "How can C++ be applied to database development?",
+  o: [
+    "By building applications that interact with databases",
+    "By replacing database systems",
+    "By storing databases in arrays",
+    "By using only pointers"
+  ],
+  a: 0
+},
+{
+  q: "Which symbol is used to declare a pointer in C++?",
+  o: ["*", "&", "%", "#"],
+  a: 0
+},
+{
+  q: "True or False: A variable must be declared before it is used in C++.",
+  o: ["True", "False"],
+  a: 0
+},
+{
+  q: "Which flow control structure allows selection among many options?",
+  o: ["switch", "for", "while", "do-while"],
+  a: 0
+},
+{
+  q: "True or False: A while loop always executes at least once.",
+  o: ["True", "False"],
+  a: 1
+},
+{
+  q: "Which keyword is used to define a function in C++?",
+  o: ["return type", "define", "function", "void"],
+  a: 0
+},
+{
+  q: "What does memory management in C++ mainly involve?",
+  o: [
+    "Allocating and deallocating memory",
+    "Sorting data",
+    "Handling input only",
+    "Creating classes"
+  ],
+  a: 0
+},
+{
+  q: "True or False: Pointers can be used to manipulate memory directly.",
+  o: ["True", "False"],
+  a: 0
+},
+{
+  q: "Which of the following best describes an array?",
+  o: [
+    "A collection of elements of the same data type",
+    "A single data value",
+    "A memory address",
+    "A function block"
+  ],
+  a: 0
+},
+{
+  q: "What is type conversion in C++?",
+  o: [
+    "Changing a variable from one data type to another",
+    "Deleting a variable",
+    "Assigning memory",
+    "Creating objects"
+  ],
+  a: 0
+},
+{
+  q: "True or False: Strings in C++ can be handled using the string library.",
+  o: ["True", "False"],
+  a: 0
+},
+{
+  q: "Which feature allows grouping related functions and variables together?",
+  o: ["Class", "Loop", "Operator", "Enum"],
+  a: 0
+},
+{
+  q: "What does encapsulation help to achieve?",
+  o: [
+    "Data hiding and security",
+    "Code duplication",
+    "Memory wastage",
+    "Unrestricted access"
+  ],
+  a: 0
+},
+{
+  q: "True or False: Polymorphism allows the same function name to behave differently.",
+  o: ["True", "False"],
+  a: 0
+},
+{
+  q: "Which concept allows focusing on essential features while hiding details?",
+  o: ["Abstraction", "Inheritance", "Enumeration", "Operator overloading"],
+  a: 0
+},
+{
+  q: "Which keyword is commonly used to handle exceptions?",
+  o: ["try", "catch", "throw", "All of the above"],
+  a: 3
+},
+{
+  q: "True or False: Exceptions help prevent program crashes by handling errors.",
+  o: ["True", "False"],
+  a: 0
+},
+{
+  q: "What is the purpose of relational operators?",
+  o: [
+    "To compare values",
+    "To assign values",
+    "To allocate memory",
+    "To define functions"
+  ],
+  a: 0
+},
+
+{
+  q: "Which enumerated type feature improves code readability?",
+  o: [
+    "Named constant values",
+    "Memory allocation",
+    "Dynamic typing",
+    "Pointer referencing"
+  ],
+  a: 0
+},
+{
+  q: "True or False: Enums restrict variables to a fixed set of values.",
+  o: ["True", "False"],
+  a: 0
+},
+{
+  q: "Which C++ feature is commonly used to connect applications to databases?",
+  o: [
+    "Database libraries and APIs",
+    "Loops",
+    "Enums",
+    "Pointers only"
+  ],
+  a: 0
+},
+{
+  q: "How does C++ help in database-driven applications?",
+  o: [
+    "By processing and managing stored data efficiently",
+    "By replacing database servers",
+    "By acting as a database",
+    "By storing only text files"
+  ],
+  a: 0
+},
+{
+  q: "True or False: C++ can be used to build backend systems that interact with databases.",
+  o: ["True", "False"],
+  a: 0
+},
+{
+  q: "Which operator category includes +, -, *, and /?",
+  o: ["Arithmetic operators", "Logical operators", "Relational operators", "Bitwise operators"],
+  a: 0
+},
+{
+  q: "What is the main advantage of using functions?",
+  o: [
+    "Code reusability and modularity",
+    "Increased memory usage",
+    "More complex syntax",
+    "Reduced performance"
+  ],
+  a: 0
+},
+{
+  q: "What will be the output of the following code?\n\nint x = 5;\ncout << x++;",
+  o: [
+    "5",
+    "6",
+    "Error",
+    "Undefined"
+  ],
+  a: 0
+},
+{
+  q: "What will be the output of this code snippet?\n\nint a = 10;\nint b = 3;\ncout << a / b;",
+  o: [
+    "3",
+    "3.333",
+    "10/3",
+    "Error"
+  ],
+  a: 0
+},
+{
+  q: "Which of the following statements is correct about this code?\n\nint *ptr;\ncout << *ptr;",
+  o: [
+    "It will print garbage value",
+    "It will print 0",
+    "It will give a compilation error",
+    "It will print the memory address of ptr"
+  ],
+  a: 2
+},
+{
+  q: "What will be the output of this snippet?\n\nfor(int i=0; i<3; i++) {\n  cout << i << ' ';\n}",
+  o: [
+    "0 1 2",
+    "0 1 2 3",
+    "1 2 3",
+    "Error"
+  ],
+  a: 0
+},
+{
+  q: "What is wrong in this code?\n\nint main() {\n  int x = '5';\n  cout << x;\n  return 0;\n}",
+  o: [
+    "Nothing wrong, prints ASCII value of '5'",
+    "Compilation error",
+    "Runtime error",
+    "Prints 5"
+  ],
+  a: 0
+},
+{
+  q: "What will be the output of this code?\n\nint arr[3] = {1,2,3};\ncout << arr[1];",
+  o: [
+    "2",
+    "1",
+    "3",
+    "Error"
+  ],
+  a: 0
+},
+{
+  q: "Which statement is correct about the following code?\n\nint a = 5;\nint b = 0;\ncout << a / b;",
+  o: [
+    "Runtime error: division by zero",
+    "Prints 0",
+    "Prints 5",
+    "Compile-time error"
+  ],
+  a: 0
+},
+{
+  q: "What will be printed by this code?\n\nint x = 1;\nif(x = 0) cout << 'Yes'; else cout << 'No';",
+  o: [
+    "No",
+    "Yes",
+    "Error",
+    "Nothing"
+  ],
+  a: 0
+},
+{
+  q: "What will be the output of the following?\n\nint a = 2;\nint b = 3;\ncout << (a & b);",
+  o: [
+    "2",
+    "3",
+    "1",
+    "0"
+  ],
+  a: 0
+},
+{
+  q: "Identify the error in this code:\n\nint main() {\n  int x;\n  cout << x;\n  return 0;\n}",
+  o: [
+    "Using uninitialized variable x",
+    "Missing return type",
+    "Syntax error",
+    "No error"
+  ],
+  a: 0
+},
+
+// ===============================
+// EXAM QUESTION BANK – BATCH 1
+// C++ PROGRAMMING (HND 1)
+// DIFFICULTY: LEVEL 10
+// ===============================
+
+{
+  q: "What will be the output of the following code?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int x = 5;\n cout << x++;\n cout << ++x;\n return 0;\n}",
+  o: [
+    "56",
+    "57",
+    "67",
+    "66"
+  ],
+  a: 1
+},
+{
+  q: "Which of the following correctly declares a constant integer in C++?",
+  o: [
+    "int const x;",
+    "const int x;",
+    "None;",
+    "Both"
+  ],
+  a: 3
+},
+{
+  q: "What is the output of the code below?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int a = 10;\n if(a = 5)\n  cout << \"Yes\";\n else\n  cout << \"No\";\n return 0;\n}",
+  o: [
+    "Yes",
+    "No",
+    "Compilation error",
+    "Runtime error"
+  ],
+  a: 0
+},
+{
+  q: "Which loop guarantees execution at least once?",
+  o: [
+    "for loop",
+    "while loop",
+    "do-while loop",
+    "None of the above"
+  ],
+  a: 2
+},
+{
+  q: "What is the output?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int i = 1;\n while(i <= 3){\n  cout << i;\n  i++;\n }\n return 0;\n}",
+  o: [
+    "123",
+    "0123",
+    "1234",
+    "321"
+  ],
+  a: 0
+},
+{
+  q: "Which of the following is NOT a valid C++ data type?",
+  o: [
+    "float",
+    "real",
+    "char",
+    "bool"
+  ],
+  a: 1
+},
+{
+  q: "What will be printed?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int x = 4;\n cout << x + 2 * 3;\n return 0;\n}",
+  o: [
+    "18",
+    "10",
+    "12",
+    "14"
+  ],
+  a: 1
+},
+{
+  q: "Which statement about arrays is correct?",
+  o: [
+    "Array index starts from 1",
+    "Array size must be defined at runtime only",
+    "Array elements are stored in contiguous memory",
+    "Arrays can store different data types"
+  ],
+  a: 2
+},
+{
+  q: "What is the output?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int arr[3] = {1,2,3};\n cout << arr[0] + arr[2];\n return 0;\n}",
+  o: [
+    "3",
+    "4",
+    "5",
+    "6"
+  ],
+  a: 1
+},
+{
+  q: "Which correctly passes a variable by reference?",
+  o: [
+    "void func(int x);",
+    "void func(int &x);",
+    "void func(int *x);",
+    "void func(&int x);"
+  ],
+  a: 1
+},
+{
+  q: "What is the output?\n\n#include <iostream>\nusing namespace std;\nvoid test(int &x){ x = x + 5; }\nint main(){\n int a = 10;\n test(a);\n cout << a;\n return 0;\n}",
+  o: [
+    "10",
+    "15",
+    "5",
+    "Compilation error"
+  ],
+  a: 1
+},
+{
+  q: "Which operator is used for dynamic memory allocation?",
+  o: [
+    "malloc",
+    "alloc",
+    "new",
+    "create"
+  ],
+  a: 2
+},
+{
+  q: "What is the output?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int x = 3;\n switch(x){\n  case 1: cout << \"One\"; break;\n  case 3: cout << \"Three\";\n  default: cout << \"Default\";\n }\n return 0;\n}",
+  o: [
+    "Three",
+    "ThreeDefault",
+    "Default",
+    "Compilation error"
+  ],
+  a: 1
+},
+{
+  q: "Which storage class makes a variable retain its value between function calls?",
+  o: [
+    "auto",
+    "register",
+    "static",
+    "extern"
+  ],
+  a: 2
+},
+{
+  q: "What is the output?\n\n#include <iostream>\nusing namespace std;\nint main(){\n for(int i=0; i<3; i++)\n  cout << i;\n return 0;\n}",
+  o: [
+    "012",
+    "123",
+    "0012",
+    "210"
+  ],
+  a: 0
+},
+{
+  q: "What is the output?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int x = 5;\n cout << x-- << --x;\n return 0;\n}",
+  o: [
+    "54",
+    "53",
+    "43",
+    "45"
+  ],
+  a: 1
+},
+{
+  q: "Which of the following will cause a compilation error?",
+  o: [
+    "int x = 10;",
+    "float y = 5.5;",
+    "int 2x = 4;",
+    "char c = 'A';"
+  ],
+  a: 2
+},
+{
+  q: "What is the output?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int a = 2, b = 3;\n cout << a == b;\n return 0;\n}",
+  o: [
+    "0",
+    "1",
+    "true",
+    "false"
+  ],
+  a: 0
+},
+{
+  q: "Which operator has the highest precedence?",
+  o: [
+    "*",
+    "+",
+    "==",
+    "="
+  ],
+  a: 0
+},
+{
+  q: "What will be printed?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int x = 0;\n if(x)\n  cout << \"True\";\n else\n  cout << \"False\";\n return 0;\n}",
+  o: [
+    "True",
+    "False",
+    "0",
+    "Compilation error"
+  ],
+  a: 1
+},
+{
+  q: "Which of the following correctly declares a pointer to an integer?",
+  o: [
+    "int *p;",
+    "int p*;",
+    "pointer int p;",
+    "*int p;"
+  ],
+  a: 0
+},
+{
+  q: "What is the output?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int x = 10;\n int *p = &x;\n cout << *p;\n return 0;\n}",
+  o: [
+    "Address of x",
+    "10",
+    "0",
+    "Compilation error"
+  ],
+  a: 1
+},
+{
+  q: "Which of the following is true about functions in C++?",
+  o: [
+    "Functions cannot return values",
+    "Functions must always have parameters",
+    "Function prototypes are optional but recommended",
+    "Functions cannot call other functions"
+  ],
+  a: 2
+},
+{
+  q: "What is the output?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int i;\n for(i=1;i<=3;i++);\n cout << i;\n return 0;\n}",
+  o: [
+    "3",
+    "4",
+    "Compilation error",
+    "1"
+  ],
+  a: 1
+},
+{
+  q: "Which keyword is used to define a class?",
+  o: [
+    "object",
+    "define",
+    "class",
+    "struct"
+  ],
+  a: 2
+},
+{
+  q: "What is the default access specifier for class members?",
+  o: [
+    "public",
+    "private",
+    "protected",
+    "internal"
+  ],
+  a: 1
+},
+{
+  q: "What is the output?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int a = 5;\n int b = ++a;\n cout << b;\n return 0;\n}",
+  o: [
+    "5",
+    "6",
+    "7",
+    "Compilation error"
+  ],
+  a: 1
+},
+{
+  q: "Which of the following statements about references is correct?",
+  o: [
+    "References can be null",
+    "References must be initialized when declared",
+    "References can be reassigned",
+    "References use * symbol"
+  ],
+  a: 1
+},
+{
+  q: "What is the output?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int arr[2] = {1,2};\n cout << arr[2];\n return 0;\n}",
+  o: [
+    "1",
+    "2",
+    "0",
+    "Undefined behavior"
+  ],
+  a: 3
+},
+{
+  q: "Which preprocessor directive is used to include header files?",
+  o: [
+    "#define",
+    "#include",
+    "#using",
+    "#header"
+  ],
+  a: 1
+},
+{
+  q: "What is the output?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int x = 5;\n if(x > 3 && x < 10)\n  cout << \"Valid\";\n else\n  cout << \"Invalid\";\n return 0;\n}",
+  o: [
+    "Valid",
+    "Invalid",
+    "Compilation error",
+    "0"
+  ],
+  a: 0
+},
+{
+  q: "Which of the following is NOT a loop structure in C++?",
+  o: [
+    "for",
+    "foreach",
+    "while",
+    "do-while"
+  ],
+  a: 1
+},
+{
+  q: "What is the output?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int x = 3;\n cout << x * x++;\n return 0;\n}",
+  o: [
+    "9",
+    "12",
+    "Compilation error",
+    "Undefined behavior"
+  ],
+  a: 3
+},
+{
+  q: "Which function is used to read a full line including spaces?",
+  o: [
+    "cin >>",
+    "getline()",
+    "scanf()",
+    "readline()"
+  ],
+  a: 1
+},
+{
+  q: "What happens if return type of a function is omitted?",
+  o: [
+    "It defaults to int",
+    "Compilation error",
+    "Runtime error",
+    "It defaults to void"
+  ],
+  a: 1
+},
+{
+  q: "Which operator is used to access class members via object?",
+  o: [
+    "->",
+    "::",
+    ".",
+    "*"
+  ],
+  a: 2
+},
+{
+  q: "What is the output?\n\n#include <iostream>\nusing namespace std;\nint main(){\n int x = 1;\n while(x < 4){\n  cout << x;\n  x++;\n }\n return 0;\n}",
+  o: [
+    "123",
+    "0123",
+    "1234",
+    "321"
+  ],
+  a: 0
+},
+{
+  q: "Which of the following correctly declares an array of 5 integers?",
+  o: [
+    "int arr(5);",
+    "int arr[5];",
+    "array int arr[5];",
+    "int[5] arr;"
+  ],
+  a: 1
+},
+{
+  q: "Which statement about constructors is true?",
+  o: [
+    "They must have return type void",
+    "They have same name as class",
+    "They cannot be overloaded",
+    "They are optional and never called automatically"
+  ],
+  a: 1
+},
+{
+  q: "Which of the following is used to terminate a loop immediately?",
+  o: [
+    "continue",
+    "stop",
+    "exit",
+    "break"
+  ],
+  a: 3
+}
+];
+
+let current = 0;
+let score = 0;
+
+// ✅ Pick 60 random questions WITHOUT modifying quizData
+function pickRandomQuestions(bank, count) {
+  const copy = [...bank];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, count);
+}
+
+const examData = pickRandomQuestions(quizData, 60);
+
+let answers = new Array(examData.length).fill(null);
+let shuffledOptions = new Array(examData.length).fill(null);
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const nextBtn = document.getElementById("nextBtn");
+const prevBtn = document.getElementById("prevBtn");
+const counterEl = document.getElementById("counter");
+const resultEl = document.getElementById("result");
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function loadQuestion() {
+  const q = examData[current];
+
+  counterEl.textContent = `Question ${current + 1} of ${examData.length}`;
+  questionEl.textContent = q.q;
+  optionsEl.innerHTML = "";
+
+  prevBtn.disabled = current === 0;
+
+  let optionsToRender;
+
+  if (shuffledOptions[current] === null) {
+    optionsToRender = q.o.map((text, index) => ({
+      text,
+      originalIndex: index
+    }));
+
+    shuffleArray(optionsToRender);
+    shuffledOptions[current] = optionsToRender;
+  } else {
+    optionsToRender = shuffledOptions[current];
+  }
+
+  optionsToRender.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.textContent = opt.text;
+
+    if (answers[current] !== null) {
+      btn.disabled = true;
+
+      if (opt.originalIndex === q.a) {
+        btn.classList.add("correct");
+      }
+
+      if (
+        opt.originalIndex === answers[current] &&
+        answers[current] !== q.a
+      ) {
+        btn.classList.add("wrong");
+      }
+    }
+
+    btn.onclick = () => selectAnswer(opt.originalIndex);
+    optionsEl.appendChild(btn);
+  });
+}
+
+function selectAnswer(index) {
+  if (answers[current] !== null) return;
+
+  answers[current] = index;
+  if (index === examData[current].a) score++;
+
+  loadQuestion();
+}
+
+nextBtn.onclick = () => {
+  if (current < examData.length - 1) {
+    current++;
+    loadQuestion();
+  } else {
+    showResult();
+  }
+};
+
+prevBtn.onclick = () => {
+  if (current > 0) {
+    current--;
+    loadQuestion();
+  }
+};
+
+function showResult() {
+  questionEl.style.display = "none";
+  optionsEl.style.display = "none";
+  counterEl.style.display = "none";
+  document.querySelector(".nav-buttons").style.display = "none";
+
+  const percentage = ((score / examData.length) * 100).toFixed(2);
+  resultEl.style.display = "block";
+  restartBtn.style.display ="block";
+
+  resultEl.innerHTML = `
+    <p><strong>Quiz Completed</strong></p>
+    <p>Score: ${score} / ${examData.length}</p>
+    <p>Percentage: ${percentage}%</p>
+  `;
+}
+
+restartBtn.onclick = () => {
+  current = 0;
+  score = 0;
+
+  const newExamData = pickRandomQuestions(quizData, 60);
+  examData.length = 0;
+  examData.push(...newExamData);
+
+  answers = new Array(examData.length).fill(null);
+  shuffledOptions = new Array(examData.length).fill(null);
+
+  questionEl.style.display = "block";
+  optionsEl.style.display = "block";
+  counterEl.style.display = "block";
+  document.querySelector(".nav-buttons").style.display = "flex";
+  resultEl.style.display = "none";
+  restartBtn.style.display = "none";
+
+  prevBtn.disabled = true;
+  nextBtn.disabled = false;
+
+  loadQuestion();
+};
+
+loadQuestion();
+</script>
+
+</body>
+</html>
